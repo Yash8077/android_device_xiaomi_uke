@@ -10,16 +10,6 @@ DEVICE_PATH := device/xiaomi/uke
 # For building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true
 
-# A/B
-AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS += \
-    odm \
-    product \
-    vendor \
-    system \
-    system_ext
-BOARD_USES_RECOVERY_AS_BOOT := true
-
 # Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
@@ -28,19 +18,32 @@ TARGET_CPU_ABI2 :=
 TARGET_CPU_VARIANT := generic
 TARGET_CPU_VARIANT_RUNTIME := kryo300
 
-# APEX
-DEXPREOPT_GENERATE_APEX_IMAGE := true
+TARGET_2ND_ARCH := arm
+TARGET_2ND_ARCH_VARIANT := armv8-a
+TARGET_2ND_CPU_ABI := armeabi-v7a
+TARGET_2ND_CPU_ABI2 := armeabi
+TARGET_2ND_CPU_VARIANT := generic
+TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a75
+
+# Power
+ENABLE_CPUSETS := true
+ENABLE_SCHEDBOOST := true
 
 # Bootloader
-TARGET_BOOTLOADER_BOARD_NAME := uke
+PRODUCT_PLATFORM := pineapple
+TARGET_BOOTLOADER_BOARD_NAME := pineapple
 TARGET_NO_BOOTLOADER := true
+TARGET_USES_UEFI := true
 
-# Kernel
+# Platform
+TARGET_BOARD_PLATFORM := pineapple
+TARGET_BOARD_PLATFORM_GPU := qcom-adreno732
+QCOM_BOARD_PLATFORMS += pineapple
+
+# Kernel 
+BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_BOOTIMG_HEADER_VERSION := 4
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
-BOARD_KERNEL_IMAGE_NAME := Image
-TARGET_KERNEL_CONFIG := uke_defconfig
-TARGET_KERNEL_SOURCE := kernel/xiaomi/uke
 
 # Kernel - prebuilt
 TARGET_FORCE_PREBUILT_KERNEL := true
@@ -48,18 +51,33 @@ ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 endif
 
+# Kernel dtb
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
+
+# A/B
+BOARD_USES_RECOVERY_AS_BOOT := true
+AB_OTA_UPDATER := true
+AB_OTA_PARTITIONS += \
+    boot \
+    dtbo \
+    odm \
+    product \
+    system \
+    system_ext \
+    vbmeta \
+    vbmeta_system \
+    vendor \
+    vendor_boot
+
+# Assert
+TARGET_OTA_ASSERT_DEVICE := uke
+
 # Partitions
 BOARD_BOOTIMAGE_PARTITION_SIZE := 104857600
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 104857600
-BOARD_HAS_LARGE_FILESYSTEM := true
-BOARD_SYSTEMIMAGE_PARTITION_TYPE := ext4
-BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := ext4
-BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
-TARGET_COPY_OUT_VENDOR := vendor
+
+# Dynamic Partition
 BOARD_SUPER_PARTITION_SIZE := 9126805504 # TODO: Fix hardcoded value
 BOARD_SUPER_PARTITION_GROUPS := xiaomi_dynamic_partitions
-BOARD_XIAOMI_DYNAMIC_PARTITIONS_PARTITION_LIST := system system system_ext product mi_ext vendor odm
-BOARD_XIAOMI_DYNAMIC_PARTITIONS_SIZE := 9122611200 # TODO: Fix hardcoded value
 
 # Platform
 TARGET_BOARD_PLATFORM := pineapple
